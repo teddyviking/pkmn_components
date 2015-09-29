@@ -31,26 +31,24 @@ h1 {
 .pokedex-list {
   width: 300px;
   margin: 0 auto;
-  border-radius: 10px;
-  border: 4px solid #F1D811;
   padding-top: 20px;
+  border: 4px solid #ffc100;
+  border-radius: 10px;
+  font-family: Verdana, sans-serif;
   list-style: none;
 
-  * {
-    text-align: center;
-  }
   img {
     width: 150px;
   }
+
   li {
-    text-align: left;
-    text-decoration: underline;
-    color: #0E46F1;
-    padding: 5px;
+    color: #313131;
     font-size: 20px;
   }
   li:hover {
+    color: #0f0f0f;
+    font-size: 25px;
+    text-decoration: underline;
     cursor: pointer;
-    cursor: hand;
   }
 }
