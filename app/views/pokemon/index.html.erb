@@ -2,6 +2,11 @@
 
 <ul class="pokedex-list">
   <% @pokemon.each do |pkmn| %>
-    <li><%= pkmn["name"] %></li>
+    <li>
+      <button class="js-show-pokemon btn btn-link"
+          data-pokemon-uri="<%= pkmn["resource_uri"] %>">
+        <%= pkmn["name"] %>
+      </button>
+    </li>
   <% end %>
 </ul>

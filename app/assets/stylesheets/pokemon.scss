@@ -41,14 +41,13 @@ h1 {
     width: 150px;
   }
 
-  li {
+  .btn-link {
     color: #313131;
     font-size: 20px;
+    padding: 3px 0;
   }
-  li:hover {
+  .btn-link:hover {
     color: #0f0f0f;
-    font-size: 25px;
-    text-decoration: underline;
-    cursor: pointer;
+    font-size: 30px;
   }
 }
