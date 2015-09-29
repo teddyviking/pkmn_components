@@ -1,0 +1,7 @@
+<h1>Pokédex</h1>
+
+<ul>
+  <% @pokemon.each do |pkmn| %>
+    <li><%= pkmn["name"] %></li>
+  <% end %>
+</ul>
