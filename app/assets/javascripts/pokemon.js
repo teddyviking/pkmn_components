@@ -10,9 +10,21 @@
 
 //Pokemon API
 
-  PokemonApp.Pokemon = function (pokemonUri) {
-    this.id = idFromUri(pokemonUri);
+  PokemonApp.Pokemon = function (id) {
+    this.id = id;
   };
+
+  PokemonApp.fetchPokemon = function (pokemonUri) {
+    var id = idFromUri(pokemonUri)
+
+    var pokemon = PokemonApp.fetchedPokemons[id];
+
+    if (!pokemon) {
+      return new PokemonApp.Pokemon(id);
+    } else {
+      return pokemon;
+    }
+  }
 
   PokemonApp.Pokemon.prototype.render = function () {
     console.log("Rendering pokemon: #" + this.id);
@@ -37,8 +49,9 @@
       var $button = $(event.currentTarget);
       var pokemonUri = $button.data('pokemon-uri');
 
-      PokemonApp.lastPokemon = new PokemonApp.Pokemon(pokemonUri);
-      PokemonApp.lastPokemon.render();
+      var pokemon = PokemonApp.fetchPokemon(pokemonUri);
+      
+      pokemon.render();
     });
 
     $('.js-show-evolutions').on('click', function(event){
@@ -55,11 +68,16 @@
 //GET Methods
   
   function getPokemonInfo(pokemon, callback) {
+
+    if (PokemonApp.fetchedPokemons[pokemon.id]){
+      callback(pokemon);
+    }
+
     $.ajax({
       url: '/api/pokemon/' + pokemon.id,
       success: function(response){
         pokemon.info = response;
-        PokemonApp.fetchedPokemons[pokemon.info.id] = pokemon.info;
+        PokemonApp.fetchedPokemons[pokemon.id] = pokemon;
         callback(pokemon);
       },
       error: function(error){
@@ -200,4 +218,5 @@
     var splittedUri = description.resource_uri.split('/');
     return splittedUri.slice(-3,-1).join('/');
   }
+
 })();
