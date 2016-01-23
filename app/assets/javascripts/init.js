@@ -5,6 +5,7 @@ if (!window.PokemonApp) {
 
 PokemonApp.init = function (){
   console.log('Pokemon App is online');
+  pokemonComponent();
 }
 
 $(document).on('ready', function(){
