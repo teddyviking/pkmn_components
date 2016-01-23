@@ -28,24 +28,20 @@ function pokemonComponent() {
   });
 
 
+
+  //Private Methods
   function idFromUri (pokemonUri) {
     var uriSegments = pokemonUri.split("/");
     var secondLast = uriSegments.length - 2;
     return uriSegments[secondLast];
   };
 
-  function formatTypes (pkmnTypes) {
-    var types = Object.keys(pkmnTypes).reduce(function(prev, key){
-      return prev + ' ' + pkmnTypes[key].name;
-    }, '');
-    return types;
-  }
-
   function renderPokemonAttributes (pokemon) {
     $.ajax({
       url: '/api/pokemon/' + pokemon.id,
       success: function (response) {
         pokemon.info = response;
+        renderPokemonDescription(pokemon);
         
         $('.js-pkmn-name').text(pokemon.info.name);
         $('.js-pkmn-number').text(pokemon.info.pkdx_id);
@@ -82,5 +78,43 @@ function pokemonComponent() {
         console.log(error);
       }
     });
+  }
+
+  function renderPokemonDescription(pokemon){
+    var descriptions = pokemon.info.descriptions;
+    var description = getLastGenerationDescription(descriptions);
+    var descriptionUri = description.resource_uri.split('/').slice(-3,-1).join('/');
+
+    $.ajax({
+      url: '/api/' + descriptionUri,
+      success: function(response){
+        pokemon.description = response.description;
+
+        $('.js-pkmn-description').text(pokemon.description);
+      }
+    })
+  }
+
+  function formatTypes (pkmnTypes) {
+    var types = Object.keys(pkmnTypes).reduce(function(prev, key){
+      return prev + ' ' + pkmnTypes[key].name;
+    }, '');
+    return types;
+  }
+
+  function getLastGenerationDescription(descriptions){
+    var greatestGeneration = 1;
+    var descriptionIndex = 0;
+
+    descriptions.forEach(function(description, index){
+      var generation = description.name.split('_')[2];
+      generation = parseInt(generation);
+      if (generation > greatestGeneration) {
+        greatestGeneration = generation;
+        descriptionIndex = index;
+      }
+    });
+
+    return descriptions[descriptionIndex];
   }
 }
