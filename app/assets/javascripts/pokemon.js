@@ -11,11 +11,16 @@ PokemonApp.Pokemon.prototype.render = function () {
     url: '/api/pokemon/' + this.id,
     success: function (response) {
       self.info = response;
-
+      
       $('.js-pkmn-name').text(self.info.name);
       $('.js-pkmn-number').text(self.info.pkdx_id);
       $('.js-pkmn-height').text(self.info.height);
       $('.js-pkmn-weight').text(self.info.weight);
+      $('.js-pkmn-hp').text(self.info.hp);
+      $('.js-pkmn-att-def').text(self.info.attack + ' - ' +self.info.defense);
+      $('.js-pkmn-sp').text(self.info.sp_atk + ' - ' +self.info.sp_def);
+      $('.js-pkmn-speed').text(self.info.speed);
+      $('.js-pkmn-types').text(PokemonApp.Pokemon.renderTypes(self.info.types));
 
       $('.js-pokemon-modal').modal('show');
     },
@@ -31,6 +36,13 @@ PokemonApp.Pokemon.idFromUri = function (pokemonUri) {
   var secondLast = uriSegments.length - 2;
   return uriSegments[secondLast];
 };
+
+PokemonApp.Pokemon.renderTypes = function (pkmnTypes) {
+  var types = Object.keys(pkmnTypes).reduce(function(prev, key){
+    return prev + ' ' + pkmnTypes[key].name;
+  }, '');
+  return types;
+}
 
 
 $(document).on('ready', function(){
