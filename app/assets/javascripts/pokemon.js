@@ -139,19 +139,27 @@
   }
 
   function getPokemonEvolutions(pokemon, callback) {
-    if(!pokemon.evolutions){
-      pokemon.evolutions = [];
+    if(PokemonApp.fetchedPokemons[pokemon.id].evolutions){
+      return callback(pokemon.evolutions);
+    }
+    
+    pokemon.evolutions = [];
 
-      pokemon.info.evolutions.forEach(function(evolution){
+    var evolutions = pokemon.info.evolutions
+    async.each(evolutions,
+      function(evolution, asyncCallback){
         $.ajax({
           url: '/api/pokemon/' + idFromUri(evolution.resource_uri),
           success: function (response) {
             pokemon.evolutions.push(response);
-            callback(pokemon.evolutions);
+            asyncCallback();
           }
         });
-      });
-    }
+      },
+      function(){
+        callback(pokemon.evolutions);
+      }
+    );
   }
 
 //====================================================================
