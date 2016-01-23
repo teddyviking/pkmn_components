@@ -14,6 +14,7 @@ function pokemonComponent() {
 
     renderPokemonAttributes(this);
     renderPokemonImage(this);
+    PokemonApp.lastPokemonEvolutions = new PokemonApp.Evolutions(this);
   };
 
 
@@ -83,7 +84,7 @@ function pokemonComponent() {
   function renderPokemonDescription(pokemon){
     var descriptions = pokemon.info.descriptions;
     var description = getLastGenerationDescription(descriptions);
-    var descriptionUri = description.resource_uri.split('/').slice(-3,-1).join('/');
+    var descriptionUri = getUriDescription(description);
 
     $.ajax({
       url: '/api/' + descriptionUri,
@@ -114,7 +115,11 @@ function pokemonComponent() {
         descriptionIndex = index;
       }
     });
-
     return descriptions[descriptionIndex];
+  }
+
+  function getUriDescription (description) {
+    var splittedUri = description.resource_uri.split('/');
+    return splittedUri.slice(-3,-1).join('/');
   }
 }
