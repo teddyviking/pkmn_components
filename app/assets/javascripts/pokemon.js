@@ -79,7 +79,7 @@
   function getPokemonInfo(pokemon, callback) {
 
     if (PokemonApp.fetchedPokemons[pokemon.id]){
-      callback(pokemon);
+      return callback(pokemon);
     }
 
     $.ajax({
@@ -96,6 +96,10 @@
   }
 
   function getPokemonImage(pokemon, callback) {  
+    if (PokemonApp.fetchedPokemons[pokemon.id]){
+      return callback(pokemon.image);
+    }
+
     var spriteId = parseInt(pokemon.id) + 1;
 
     $.ajax({
@@ -112,6 +116,11 @@
   }
 
   function getPokemonDescription (pokemon, callback) {
+    
+    if (PokemonApp.fetchedPokemons[pokemon.id].description){
+      return callback(pokemon.description);
+    }
+
     var descriptions = pokemon.info.descriptions;
     var description = getLastGenerationDescription(descriptions);
     var descriptionUri = getUriDescription(description);
