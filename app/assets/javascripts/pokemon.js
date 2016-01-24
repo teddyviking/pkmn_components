@@ -87,7 +87,7 @@
       success: function(response){
         pokemon.info = response;
         PokemonApp.fetchedPokemons[pokemon.id] = pokemon;
-        callback(null, pokemon);
+        if (callback) {callback(null, pokemon);}
       },
       error: function(error){
         callback(error);
@@ -96,7 +96,8 @@
   }
 
   function getPokemonImage (pokemon, callback) {  
-    if (PokemonApp.fetchedPokemons[pokemon.id]){
+    if (PokemonApp.fetchedPokemons[pokemon.id] && pokemon.image){
+      
       return callback(null, pokemon.image);
     }
 
@@ -107,7 +108,7 @@
       success: function (response) {
         pokemon.image = response.image;
 
-        callback(null, pokemon.image);
+        if(callback){callback(null, pokemon.image);}
       },
       error: function (error) {
         callback(error);
@@ -130,7 +131,7 @@
       success: function(response){
         pokemon.description = response.description;
 
-        callback(null, pokemon.description);
+        if (callback) {callback(null, pokemon.description);}
       },
       error: function (error) {
         callback(error);
@@ -148,15 +149,17 @@
       return PokemonApp.fetchPokemon(evolution.resource_uri);
     })
 
+
     async.map(evolutions,
-      getPokemonInfo,
+      function(evolution, callback){
+        getPokemonInfo(evolution, callback);
+        getPokemonImage(evolution,function(){});
+      },
       function(err, finalEvolutions){
         pokemon.evolutions = finalEvolutions;
         renderPokemonEvolutions(null, pokemon.evolutions);
       }
     )
-
-
   }
 
 //====================================================================
@@ -165,7 +168,6 @@
 
   function renderPokemonInfo (err, pokemon) {
     getPokemonDescription(pokemon, renderPokemonDescription);
-          
     setModalAttributes(pokemon.info);   
 
     $('.js-pokemon-modal').modal('show');
