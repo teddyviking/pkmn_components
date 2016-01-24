@@ -69,6 +69,19 @@
 
       PokemonApp.lastPokemon.renderEvolutions();
     });
+
+    $('.modal-body').on('click', '.js-pkmn-evolution', function(event){
+      event.preventDefault();
+      console.log('yuju');
+      var $button = $(event.currentTarget);
+      var pokemonUri = $button.data('pokemon-uri');
+
+      PokemonApp.cleanPokemon();
+      var pokemon = PokemonApp.fetchPokemon(pokemonUri);
+      
+      PokemonApp.lastPokemon = pokemon.render();
+    })
+    
   });
 
 //====================================================================
@@ -188,7 +201,7 @@
     var evolutionsHTML = '<ul>\n';
 
     pokemonEvolutions.forEach(function(evolution, index){
-      evolutionsHTML += ('<li data-pokemon-uri="'+ 
+      evolutionsHTML += ('<li class="js-pkmn-evolution" data-pokemon-uri="'+ 
                         evolution.info.resource_uri + 
                         '"><img src="http://pokeapi.co' +
                         evolution.image +'">' +
