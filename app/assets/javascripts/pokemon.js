@@ -76,10 +76,10 @@
 
 //GET Methods
   
-  function getPokemonInfo(pokemon, callback) {
+  function getPokemonInfo (pokemon, callback) {
 
     if (PokemonApp.fetchedPokemons[pokemon.id]){
-      return callback(pokemon);
+      return callback(null, pokemon);
     }
 
     $.ajax({
@@ -87,17 +87,17 @@
       success: function(response){
         pokemon.info = response;
         PokemonApp.fetchedPokemons[pokemon.id] = pokemon;
-        callback(pokemon);
+        callback(null, pokemon);
       },
       error: function(error){
-        console.log(error);
+        callback(error);
       }
     });
   }
 
-  function getPokemonImage(pokemon, callback) {  
+  function getPokemonImage (pokemon, callback) {  
     if (PokemonApp.fetchedPokemons[pokemon.id]){
-      return callback(pokemon.image);
+      return callback(null, pokemon.image);
     }
 
     var spriteId = parseInt(pokemon.id) + 1;
@@ -107,10 +107,10 @@
       success: function (response) {
         pokemon.image = response.image;
 
-        callback(pokemon.image);
+        callback(null, pokemon.image);
       },
       error: function (error) {
-        console.log(error);
+        callback(error);
       }
     });
   }
@@ -118,7 +118,7 @@
   function getPokemonDescription (pokemon, callback) {
     
     if (PokemonApp.fetchedPokemons[pokemon.id].description){
-      return callback(pokemon.description);
+      return callback(null, pokemon.description);
     }
 
     var descriptions = pokemon.info.descriptions;
@@ -130,43 +130,40 @@
       success: function(response){
         pokemon.description = response.description;
 
-        callback(pokemon.description);
+        callback(null, pokemon.description);
       },
       error: function (error) {
-        console.log(error);
+        callback(error);
       }
     })
   }
 
-  function getPokemonEvolutions(pokemon, callback) {
-    if(PokemonApp.fetchedPokemons[pokemon.id].evolutions){
-      return callback(pokemon.evolutions);
-    }
+  function getPokemonEvolutions (pokemon, callback) {
     
-    pokemon.evolutions = [];
+    if(PokemonApp.fetchedPokemons[pokemon.id].evolutions){
+      return callback(null, pokemon.evolutions);
+    }
 
-    var evolutions = pokemon.info.evolutions
-    async.each(evolutions,
-      function(evolution, asyncCallback){
-        $.ajax({
-          url: '/api/pokemon/' + idFromUri(evolution.resource_uri),
-          success: function (response) {
-            pokemon.evolutions.push(response);
-            asyncCallback();
-          }
-        });
-      },
-      function(){
-        callback(pokemon.evolutions);
+    evolutions = pokemon.info.evolutions.map(function(evolution){
+      return PokemonApp.fetchPokemon(evolution.resource_uri);
+    })
+
+    async.map(evolutions,
+      getPokemonInfo,
+      function(err, finalEvolutions){
+        pokemon.evolutions = finalEvolutions;
+        renderPokemonEvolutions(null, pokemon.evolutions);
       }
-    );
+    )
+
+
   }
 
 //====================================================================
 
 // Render Methods
 
-  function renderPokemonInfo (pokemon) {
+  function renderPokemonInfo (err, pokemon) {
     getPokemonDescription(pokemon, renderPokemonDescription);
           
     setModalAttributes(pokemon.info);   
@@ -174,19 +171,19 @@
     $('.js-pokemon-modal').modal('show');
   }
 
-  function renderPokemonDescription(pokemonDescription){
+  function renderPokemonDescription(err, pokemonDescription){
     setModalDescription(pokemonDescription);
   }
 
-  function renderPokemonImage (pokemonImage) {
+  function renderPokemonImage (err, pokemonImage) {
     setModalImage(pokemonImage);     
   }
 
-  function renderPokemonEvolutions (pokemonEvolutions) {
+  function renderPokemonEvolutions (err, pokemonEvolutions) {
     var evolutionsHTML = '<ul>\n';
 
     pokemonEvolutions.forEach(function(evolution, index){
-      evolutionsHTML += ('<li data-pokemon-uri="'+ evolution.resource_uri + '">' + evolution.name + '</li>\n');
+      evolutionsHTML += ('<li data-pokemon-uri="'+ evolution.info.resource_uri + '">' + evolution.info.name + '</li>\n');
     });
 
     evolutionsHTML += '</ul>';
