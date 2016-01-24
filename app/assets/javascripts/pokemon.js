@@ -151,15 +151,18 @@
 
 
     async.map(evolutions,
-      function(evolution, callback){
-        getPokemonInfo(evolution, callback);
-        getPokemonImage(evolution,function(){});
-      },
+      getPokemonInfo,
       function(err, finalEvolutions){
+        
         pokemon.evolutions = finalEvolutions;
-        renderPokemonEvolutions(null, pokemon.evolutions);
+
+        async.map(evolutions,
+          getPokemonImage,
+          function(err, imagedEvolutions){
+            renderPokemonEvolutions(null, pokemon.evolutions);
+          });
       }
-    )
+    );
   }
 
 //====================================================================
