@@ -185,7 +185,11 @@
     var evolutionsHTML = '<ul>\n';
 
     pokemonEvolutions.forEach(function(evolution, index){
-      evolutionsHTML += ('<li data-pokemon-uri="'+ evolution.info.resource_uri + '">' + evolution.info.name + '</li>\n');
+      evolutionsHTML += ('<li data-pokemon-uri="'+ 
+                        evolution.info.resource_uri + 
+                        '"><img src="http://pokeapi.co' +
+                        evolution.image +'">' +
+                        evolution.info.name + '</li>\n');
     });
 
     evolutionsHTML += '</ul>';
